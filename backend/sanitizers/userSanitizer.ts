@@ -15,6 +15,15 @@ export async function sanitizeUser(users: UserType): Promise<UserType> {
     return sanitizedUser;
 }
 
+export async function sanitizeLoginUser(email: string, password: string): Promise<UserType> {
+    let sanitizedUser = <UserType>{};
+
+    sanitizedUser.email = sanitizeEmail(email);
+    sanitizedUser.password = await sanitizePassword(password);
+
+    return sanitizedUser;
+}
+
 function sanitizeUsername(username: string): string {
     // Types
     if (username === undefined) {

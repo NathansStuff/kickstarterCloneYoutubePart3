@@ -1,6 +1,8 @@
+import bcrypt from 'bcryptjs';
+
 import { checkIsValidObjectId } from '../database/db';
 import UserModel from '../models/userModel';
-import { sanitizeUser } from '../sanitizers/userSanitizer';
+import { sanitizeLoginUser, sanitizeUser } from '../sanitizers/userSanitizer';
 import { IUserSchema } from '../schema/userSchema';
 import { UserType } from '../types/userTypes';
 
@@ -37,6 +39,28 @@ export async function getUserById(userId: string): Promise<IUserSchema> {
         return user;
     } catch (err) {
         throw new Error(`Failed to get user: ${err.message}`);
+    }
+}
+
+export async function loginUser(
+    email: string,
+    password: string
+): Promise<UserType> {
+    const sanitizedUser = await sanitizeLoginUser(email, password);
+
+    try {
+        const sanitizedUser = await UserModel.findOne({ email });
+        if (!sanitizedUser) throw new Error('User not found');
+
+        const isPasswordValid = await bcrypt.compare(
+            password,
+            sanitizedUser.password
+        );
+        if (!isPasswordValid) throw new Error('Password is invalid');
+
+        return sanitizedUser;
+    } catch (err) {
+        throw new Error(`Failed to login user: ${err.message}`);
     }
 }
 

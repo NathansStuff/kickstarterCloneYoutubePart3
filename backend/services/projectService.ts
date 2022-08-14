@@ -11,7 +11,7 @@ export async function getProjects(): Promise<ProjectType[]> {
 
         return projects;
     } catch (err) {
-        throw new Error('Error getting projects');
+        throw new Error(`Failed to get projects: ${err.message}`);
     }
 }
 
@@ -26,7 +26,7 @@ export async function createProject(
 
         return newProject;
     } catch (err) {
-        throw new Error('Error creating project');
+        throw new Error(`Error creating project: ${err.message}`);
     }
 }
 
@@ -40,7 +40,7 @@ export async function getProjectById(
 
         return project;
     } catch (err) {
-        throw new Error('Error finding project');
+        throw new Error(`Error getting project: ${err.message}`);
     }
 }
 
@@ -62,7 +62,7 @@ export async function updateProject(
 
         return updatedProject;
     } catch (err) {
-        throw new Error('Error updating project');
+        throw new Error(`Error updating project: ${err.message}`);
     }
 }
 
@@ -75,6 +75,6 @@ export async function deleteProject(projectId: string): Promise<void> {
 
         return;
     } catch (err) {
-        throw new Error('Error deleting project');
+        throw new Error(`Error deleting project: ${err.message}`);
     }
 }

@@ -1,16 +1,16 @@
 import { emailRegex } from '../schema/userSchema';
 import { UserType } from '../types/userTypes';
 import HttpException from '../utils/httpException';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
-export function sanitizeUser(users: UserType): UserType {
+export async function sanitizeUser(users: UserType): Promise<UserType> {
     let sanitizedUser = <UserType>{};
 
     sanitizedUser.email = sanitizeEmail(users.email);
     sanitizedUser.isAdmin = sanitizeIsAdmin(users.isAdmin);
     sanitizedUser.username = sanitizeUsername(users.username);
-    sanitizedUser.password = users.password;
-
-    // sanitizedProject.title = sanitizeTitle(project.title);
+    sanitizedUser.password = await sanitizePassword(users.password);
 
     return sanitizedUser;
 }
@@ -29,7 +29,6 @@ function sanitizeUsername(username: string): string {
 
     return username;
 }
-
 
 function sanitizeIsAdmin(isAdmin: boolean): boolean {
     // Types
@@ -60,4 +59,27 @@ function sanitizeEmail(email: string): string {
     }
 
     return email;
+}
+
+async function sanitizePassword(password: string): Promise<string> {
+    // Types
+    if (password === undefined) {
+        throw new HttpException('Password is undefined', 400);
+    }
+    if (typeof password !== 'string') {
+        throw new HttpException('Password is not a string', 400);
+    }
+
+    // Attributes
+    password = password.trim();
+    if (password.length < 6) {
+        throw new HttpException('Password must be at least 6 characters', 400);
+    }
+    if (password.length > 50) {
+        throw new HttpException('Password mut be less then 50 characters', 400);
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    return hashedPassword;
 }

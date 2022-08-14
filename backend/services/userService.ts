@@ -16,7 +16,7 @@ export async function getUsers(): Promise<UserType[]> {
 }
 
 export async function createUser(user: UserType): Promise<UserType> {
-    const sanitizedUser = sanitizeUser(user);
+    const sanitizedUser = await sanitizeUser(user);
 
     try {
         const newUser = await UserModel.create(sanitizedUser);

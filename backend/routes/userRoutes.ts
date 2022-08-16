@@ -1,4 +1,5 @@
 import express from 'express';
+import { protect } from '../models/authMiddleware';
 const router = express.Router();
 
 const {
@@ -10,12 +11,12 @@ const {
     loginUserHandler,
 } = require('../controllers/userController');
 
-router.route('/').get(getUsersHandler).post(createUserHandler);
+router.route('/').get(protect, getUsersHandler).post(createUserHandler);
 router.route('/login').post(loginUserHandler);
 router
     .route('/:id')
     .get(getUserHandler)
-    .put(updateUserHandler)
-    .delete(deleteUserHandler);
+    .put(protect, updateUserHandler)
+    .delete(protect, deleteUserHandler);
 
 module.exports = router;

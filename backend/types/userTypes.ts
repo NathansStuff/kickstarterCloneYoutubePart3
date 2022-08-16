@@ -6,3 +6,11 @@ export interface UserType {
     resetPasswordToken: string;
     resetPasswordExpires: Date;
 }
+
+export interface UserReturnType {
+    _id: string;
+    username: string;
+    email: string;
+    isAdmin: boolean;
+    token: string;
+}

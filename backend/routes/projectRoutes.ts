@@ -1,4 +1,5 @@
-import express from 'express'
+import express from 'express';
+import { protect } from '../models/authMiddleware';
 const router = express.Router();
 
 const {
@@ -9,11 +10,11 @@ const {
     updateProjectHandler,
 } = require('../controllers/projectController');
 
-router.route('/').get(getProjectsHandler).post(createProjectHandler);
+router.route('/').get(getProjectsHandler).post(protect, createProjectHandler);
 router
     .route('/:id')
     .get(getProjectHandler)
-    .put(updateProjectHandler)
-    .delete(deleteProjectHandler);
+    .put(protect, updateProjectHandler)
+    .delete(protect, deleteProjectHandler);
 
 module.exports = router;

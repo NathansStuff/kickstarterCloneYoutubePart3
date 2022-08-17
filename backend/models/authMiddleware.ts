@@ -3,21 +3,24 @@ import { verifyToken } from '../services/tokenService';
 import { getUserById } from '../services/userService';
 import { UserType } from '../types/userTypes';
 import HttpException from '../utils/httpException';
-
-const asyncHandler = require('express-async-handler');
+import asyncHandler from 'express-async-handler';
 
 export interface GetUserAuthInfoRequest extends Request {
-    user: UserType;
+    user?: UserType;
 }
 
 export const protect = asyncHandler(
     async (req: GetUserAuthInfoRequest, res: Response, next: NextFunction) => {
         // expect {headers: {authorization: "Bearer token"}}
         if (
-            !req.headers ||
-            !req.headers.authorization ||
-            !req.headers.authorization.startsWith('Bearer ')
+            req.headers.authorization === undefined ||
+            req.headers.authorization === null ||
+            req.headers.authorization === ''
         ) {
+            throw new HttpException('Authorization header is missing', 401);
+        }
+
+        if (!req.headers.authorization.startsWith('Bearer ')) {
             throw new HttpException('Unauthorized', 401);
         }
 

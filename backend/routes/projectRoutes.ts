@@ -1,14 +1,15 @@
-import express from 'express';
+import { Router } from 'express';
 import { protect } from '../models/authMiddleware';
-const router = express.Router();
 
-const {
+import {
     getProjectsHandler,
     createProjectHandler,
     getProjectHandler,
     deleteProjectHandler,
     updateProjectHandler,
-} = require('../controllers/projectController');
+} from '../controllers/projectController';
+
+const router = Router();
 
 router.route('/').get(getProjectsHandler).post(protect, createProjectHandler);
 router
@@ -17,4 +18,4 @@ router
     .put(protect, updateProjectHandler)
     .delete(protect, deleteProjectHandler);
 
-module.exports = router;
+export default router;

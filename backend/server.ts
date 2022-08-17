@@ -3,15 +3,19 @@ import { connectDB } from './database/db';
 import { errorHandler } from './middleware/errorMiddleware';
 import { PORT } from './utils/config';
 import * as Colors from 'colors.ts';
+import UserRouter from './routes/userRoutes';
+import ProjectRouter from './routes/projectRoutes';
 Colors.colors('', '');
 
-connectDB();
+export const db = async (): Promise<void> => {
+    await connectDB();
+};
 
 const app = express();
 app.use(express.json());
 
-app.use('/api/projects', require('./routes/projectRoutes'));
-app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/projects', ProjectRouter);
+app.use('/api/users', UserRouter);
 
 app.use(errorHandler);
 

@@ -1,6 +1,8 @@
 import { Schema } from 'mongoose';
 import { UserType } from '../types/userTypes';
 
+// eslint will complain about the 'Unnessaary escape character / \'
+// eslint-disable-next-line
 export const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 export interface IUserSchema extends UserType {

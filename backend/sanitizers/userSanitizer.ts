@@ -1,9 +1,20 @@
 import { emailRegex } from '../schema/userSchema';
-import { UserType } from '../types/userTypes';
+import {
+    UserLoginSanitizedType,
+    UserSanitizedType,
+    UserType,
+} from '../types/userTypes';
 import HttpException from '../utils/httpException';
 
-export async function sanitizeUser(users: UserType): Promise<UserType> {
-    let sanitizedUser = <UserType>{};
+export async function sanitizeUser(
+    users: UserType
+): Promise<UserSanitizedType> {
+    const sanitizedUser: UserSanitizedType = {
+        username: '',
+        email: '',
+        password: '',
+        isAdmin: false,
+    };
 
     sanitizedUser.email = sanitizeEmail(users.email);
     sanitizedUser.isAdmin = sanitizeIsAdmin(users.isAdmin);
@@ -16,8 +27,11 @@ export async function sanitizeUser(users: UserType): Promise<UserType> {
 export async function sanitizeLoginUser(
     email: string,
     password: string
-): Promise<UserType> {
-    let sanitizedUser = <UserType>{};
+): Promise<UserLoginSanitizedType> {
+    const sanitizedUser: UserLoginSanitizedType = {
+        email: '',
+        password: '',
+    };
 
     sanitizedUser.email = sanitizeEmail(email);
     sanitizedUser.password = await sanitizePassword(password);
@@ -64,7 +78,7 @@ function sanitizeEmail(email: string): string {
     if (email.length > 50) {
         throw new HttpException('Email mut be less then 50 characters', 400);
     }
-    if (!email.match(emailRegex)) {
+    if (email.match(emailRegex) == null) {
         throw new HttpException('Please add a valid email', 400);
     }
 

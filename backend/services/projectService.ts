@@ -3,15 +3,13 @@ import ProjectModel from '../models/projectModel';
 import { sanitizeProject } from '../sanitizers/projectSanitizer';
 import { IProjectSchema } from '../schema/projectSchema';
 import { ProjectType } from '../types/projectTypes';
+import { ErrorHandler } from '../utils/httpException';
 
 export async function getProjects(): Promise<ProjectType[]> {
     try {
-        const projects = await ProjectModel.find();
-        if (!projects) throw new Error('Projects not found');
-
-        return projects;
-    } catch (err) {
-        throw new Error(`Failed to get projects: ${err.message}`);
+        return await ProjectModel.find();
+    } catch (error: unknown) {
+        throw ErrorHandler(error);
     }
 }
 
@@ -21,12 +19,9 @@ export async function createProject(
     const sanitizedProject = sanitizeProject(project);
 
     try {
-        const newProject = await ProjectModel.create(sanitizedProject);
-        if (!newProject) throw new Error('Project not created');
-
-        return newProject;
-    } catch (err) {
-        throw new Error(`Error creating project: ${err.message}`);
+        return await ProjectModel.create(sanitizedProject);
+    } catch (error: unknown) {
+        throw ErrorHandler(error);
     }
 }
 
@@ -36,11 +31,11 @@ export async function getProjectById(
     checkIsValidObjectId(projectId);
     try {
         const project = await ProjectModel.findById(projectId);
-        if (!project) throw new Error('Project not found');
+        if (project == null) throw new Error('Project not found');
 
         return project;
-    } catch (err) {
-        throw new Error(`Error getting project: ${err.message}`);
+    } catch (error: unknown) {
+        throw ErrorHandler(error);
     }
 }
 
@@ -58,11 +53,11 @@ export async function updateProject(
             sanitizedProject,
             { new: true }
         );
-        if (!updatedProject) throw new Error('Project not found');
+        if (updatedProject == null) throw new Error('Project not found');
 
         return updatedProject;
-    } catch (err) {
-        throw new Error(`Error updating project: ${err.message}`);
+    } catch (error: unknown) {
+        throw ErrorHandler(error);
     }
 }
 
@@ -71,10 +66,10 @@ export async function deleteProject(projectId: string): Promise<void> {
 
     try {
         const project = await ProjectModel.findByIdAndDelete(projectId);
-        if (!project) throw new Error('Project not found');
+        if (project == null) throw new Error('Project not found');
 
         return;
-    } catch (err) {
-        throw new Error(`Error deleting project: ${err.message}`);
+    } catch (error: unknown) {
+        throw ErrorHandler(error);
     }
 }

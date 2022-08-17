@@ -5,17 +5,16 @@ import UserModel from '../models/userModel';
 import { sanitizeLoginUser, sanitizeUser } from '../sanitizers/userSanitizer';
 import { IUserSchema } from '../schema/userSchema';
 import { UserReturnType, UserType } from '../types/userTypes';
-import HttpException from '../utils/httpException';
+import HttpException, { ErrorHandler } from '../utils/httpException';
 import { generateToken } from './tokenService';
 
 export async function getUsers(): Promise<UserType[]> {
     try {
         const users = await UserModel.find();
-        if (!users) throw new HttpException('Users not found', 404);
 
         return users;
-    } catch (err) {
-        throw new HttpException(`Failed to get users: ${err.message}`, 400);
+    } catch (error: unknown) {
+        throw ErrorHandler(error);
     }
 }
 
@@ -31,7 +30,6 @@ export async function createUser(user: UserType): Promise<UserReturnType> {
             password: hashedPassword,
             isAdmin: sanitizedUser.isAdmin,
         });
-        if (!newUser) throw new HttpException('User not created', 400);
 
         return {
             _id: newUser._id,
@@ -45,8 +43,8 @@ export async function createUser(user: UserType): Promise<UserReturnType> {
                 isAdmin: newUser.isAdmin,
             }),
         };
-    } catch (err) {
-        throw new HttpException(`Failed to create user: ${err.message}`, 400);
+    } catch (error: unknown) {
+        throw ErrorHandler(error);
     }
 }
 
@@ -54,11 +52,11 @@ export async function getUserById(userId: string): Promise<IUserSchema> {
     checkIsValidObjectId(userId);
     try {
         const user = await UserModel.findById(userId);
-        if (!user) throw new HttpException('User not found', 404);
+        if (user == null) throw new HttpException('User not found', 404);
 
         return user;
-    } catch (err) {
-        throw new HttpException(`Failed to get user: ${err.message}`, 400);
+    } catch (error: unknown) {
+        throw ErrorHandler(error);
     }
 }
 
@@ -70,7 +68,7 @@ export async function loginUser(
 
     try {
         const user = await UserModel.findOne({ email });
-        if (!user) throw new HttpException('User not found', 404);
+        if (user == null) throw new HttpException('User not found', 404);
 
         const isPasswordValid = await bcrypt.compare(
             sanitizedUser.password,
@@ -91,8 +89,8 @@ export async function loginUser(
                 isAdmin: user.isAdmin,
             }),
         };
-    } catch (err) {
-        throw new HttpException(`Failed to login user: ${err.message}`, 401);
+    } catch (error: unknown) {
+        throw ErrorHandler(error);
     }
 }
 
@@ -110,11 +108,11 @@ export async function updateUser(
             sanitizedUser,
             { new: true }
         );
-        if (!updatedUser) throw new HttpException('User not found', 404);
+        if (updatedUser == null) throw new HttpException('User not found', 404);
 
         return updatedUser;
-    } catch (err) {
-        throw new HttpException(`Failed to update user: ${err.message}`, 400);
+    } catch (error: unknown) {
+        throw ErrorHandler(error);
     }
 }
 
@@ -123,10 +121,10 @@ export async function deleteUser(userId: string): Promise<void> {
 
     try {
         const user = await UserModel.findByIdAndDelete(userId);
-        if (!user) throw new HttpException('User not found', 404);
+        if (user == null) throw new HttpException('User not found', 404);
 
         return;
-    } catch (err) {
-        throw new HttpException(`Failed to delete user: ${err.message}`, 400);
+    } catch (error: unknown) {
+        throw ErrorHandler(error);
     }
 }

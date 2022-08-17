@@ -6,7 +6,9 @@
     "scripts": {
         "start": "node backend/server.ts",
         "dev": "nodemon backend/server.ts",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "lint": "eslint --ext .js,.ts .",
+        "lint-fix": "eslint --ext .js,.ts . --fix"
     },
     "author": "nathan odonnell",
     "license": "ISC",

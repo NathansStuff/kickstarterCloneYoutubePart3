@@ -33,7 +33,7 @@ const createUserHandler = asyncHandler(async (req: Request, res: Response) => {
 const loginUserHandler = asyncHandler(async (req: Request, res: Response) => {
     const user = await loginUser(req.body.email, req.body.password);
     res.status(201).json(user);
-})
+});
 
 //@desc Get a User by id
 //@route GET /api/User/:id

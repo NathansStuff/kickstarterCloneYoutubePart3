@@ -13,7 +13,10 @@ export async function sanitizeUser(users: UserType): Promise<UserType> {
     return sanitizedUser;
 }
 
-export async function sanitizeLoginUser(email: string, password: string): Promise<UserType> {
+export async function sanitizeLoginUser(
+    email: string,
+    password: string
+): Promise<UserType> {
     let sanitizedUser = <UserType>{};
 
     sanitizedUser.email = sanitizeEmail(email);

@@ -20,10 +20,7 @@ const userSchema = new Schema<UserType>(
             unique: true,
             min: [6, 'Email must be at least 6 characters'],
             max: [50, 'Email must be less then 50 characters'],
-            match: [
-               emailRegex,
-                'Please add a valid email',
-            ],
+            match: [emailRegex, 'Please add a valid email'],
         },
         password: {
             type: String,
